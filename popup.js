@@ -6,16 +6,94 @@ let proxies = [];
 let activeProxyId = null;
 let editingId = null;
 let currentPolicyMode = 'blacklist';
+let currentTheme = 'system';
 
 // ── Init ──────────────────────────────────────────────
 async function init() {
-  const data = await chrome.storage.local.get(['proxies', 'activeProxyId']);
+  const data = await chrome.storage.local.get(['proxies', 'activeProxyId', 'lang', 'theme']);
   proxies = data.proxies || [];
   activeProxyId = data.activeProxyId || null;
 
+  // Restore language
+  const savedLang = data.lang || navigator.language.slice(0, 2);
+  const supportedLangs = ['en', 'ko', 'ja', 'zh'];
+  setLang(supportedLangs.includes(savedLang) ? savedLang : 'en');
+  document.getElementById('langSelect').value = currentLang;
+
+  // Restore theme
+  currentTheme = data.theme || 'system';
+  applyTheme(currentTheme);
+
+  applyLocaleToUI();
   renderProxyList();
   updateStatus();
   bindEvents();
+}
+
+// ── Apply Locale to Static UI ─────────────────────────
+function applyLocaleToUI() {
+  // Settings panel
+  document.getElementById('settingsTitle').textContent = t('settingsTitle');
+  document.getElementById('labelLanguage').textContent = t('labelLanguage');
+  document.getElementById('labelTheme').textContent = t('labelTheme');
+  document.querySelector('#themeLight span').textContent = t('themeLight');
+  document.querySelector('#themeDark span').textContent = t('themeDark');
+  document.querySelector('#themeSystem span').textContent = t('themeSystem');
+
+  // Empty state
+  document.getElementById('emptyTitle').textContent = t('emptyTitle');
+  document.getElementById('emptySub').textContent = t('emptySub');
+
+  // Form labels
+  document.getElementById('labelName').textContent = t('labelName');
+  document.getElementById('labelProtocol').textContent = t('labelProtocol');
+  document.getElementById('labelHost').textContent = t('labelHost');
+  document.getElementById('labelPort').textContent = t('labelPort');
+  document.getElementById('labelAuth').textContent = t('labelAuth');
+  document.getElementById('labelPolicyMode').textContent = t('labelPolicyMode');
+  document.getElementById('optionAll').textContent = t('optionAll');
+
+  // Form placeholders
+  document.getElementById('proxyName').placeholder = t('placeholderName');
+  document.getElementById('proxyHost').placeholder = t('placeholderHost');
+  document.getElementById('proxyPort').placeholder = t('placeholderPort');
+  document.getElementById('proxyUser').placeholder = t('placeholderUser');
+  document.getElementById('proxyPass').placeholder = t('placeholderPass');
+
+  // Policy buttons
+  document.querySelector('#policyBlacklist .policy-label').textContent = t('policyBlacklistLabel');
+  document.querySelector('#policyBlacklist .policy-desc').textContent = t('policyBlacklistDesc');
+  document.querySelector('#policyWhitelist .policy-label').textContent = t('policyWhitelistLabel');
+  document.querySelector('#policyWhitelist .policy-desc').textContent = t('policyWhitelistDesc');
+
+  // Form buttons
+  document.getElementById('cancelBtn').textContent = t('btnCancel');
+  document.getElementById('saveBtn').textContent = t('btnSave');
+
+  // Add button
+  document.getElementById('addProxyBtn').textContent = t('addProxy');
+
+  // Domain label (depends on current policy mode)
+  setPolicyMode(currentPolicyMode);
+
+  // Update theme button active state
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === currentTheme);
+  });
+}
+
+// ── Theme ─────────────────────────────────────────────
+function applyTheme(theme) {
+  currentTheme = theme;
+  if (theme === 'system') {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === theme);
+  });
 }
 
 // ── Event Bindings ────────────────────────────────────
@@ -27,6 +105,36 @@ function bindEvents() {
   // Policy mode toggle
   document.getElementById('policyBlacklist').addEventListener('click', () => setPolicyMode('blacklist'));
   document.getElementById('policyWhitelist').addEventListener('click', () => setPolicyMode('whitelist'));
+
+  // Settings toggle
+  document.getElementById('settingsBtn').addEventListener('click', () => {
+    const panel = document.getElementById('settingsPanel');
+    const btn = document.getElementById('settingsBtn');
+    panel.classList.toggle('hidden');
+    btn.classList.toggle('active');
+  });
+
+  // Language change
+  document.getElementById('langSelect').addEventListener('change', async (e) => {
+    setLang(e.target.value);
+    await chrome.storage.local.set({ lang: e.target.value });
+    applyLocaleToUI();
+    renderProxyList();
+    updateStatus();
+  });
+
+  // Theme buttons
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      applyTheme(btn.dataset.theme);
+      await chrome.storage.local.set({ theme: btn.dataset.theme });
+    });
+  });
+
+  // Listen for system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (currentTheme === 'system') applyTheme('system');
+  });
 }
 
 function setPolicyMode(mode) {
@@ -36,11 +144,11 @@ function setPolicyMode(mode) {
 
   const label = document.getElementById('domainListLabel');
   if (mode === 'blacklist') {
-    label.textContent = '프록시 제외 목록 (콤마로 구분)';
-    document.getElementById('domainList').placeholder = '예: localhost, 127.0.0.1, *.example.com';
+    label.textContent = t('domainLabelBlacklist');
+    document.getElementById('domainList').placeholder = t('domainPlaceholderBlacklist');
   } else {
-    label.textContent = '프록시 적용 목록 (콤마로 구분)';
-    document.getElementById('domainList').placeholder = '예: *.company.com, internal.site.kr';
+    label.textContent = t('domainLabelWhitelist');
+    document.getElementById('domainList').placeholder = t('domainPlaceholderWhitelist');
   }
 }
 
@@ -54,7 +162,7 @@ function renderProxyList() {
 
   emptyEl.classList.add('hidden');
 
-  // "프록시 미사용" 항목을 항상 맨 위에 추가
+  // "No Proxy" item always at top
   const directItem = document.createElement('div');
   const isDirectActive = !activeProxyId;
   directItem.className = `proxy-item proxy-item-direct${isDirectActive ? ' active' : ''}`;
@@ -62,8 +170,8 @@ function renderProxyList() {
     <label class="proxy-radio-label">
       <input type="radio" name="proxySelect" value="" ${isDirectActive ? 'checked' : ''}>
       <div class="proxy-info">
-        <div class="proxy-name">프록시 미사용</div>
-        <div class="proxy-detail">직접 연결</div>
+        <div class="proxy-name">${escapeHtml(t('noProxy'))}</div>
+        <div class="proxy-detail">${escapeHtml(t('directConnection'))}</div>
       </div>
     </label>
   `;
@@ -81,6 +189,10 @@ function renderProxyList() {
     const policyLabel = proxy.policyMode === 'whitelist' ? 'WL' : 'BL';
     const policyClass = proxy.policyMode === 'whitelist' ? 'whitelist' : 'blacklist';
 
+    const domainCountText = proxy.domainList && proxy.domainList.length > 0
+      ? `· ${t('domainCount').replace('{n}', proxy.domainList.length)}`
+      : '';
+
     const item = document.createElement('div');
     item.className = `proxy-item${isActive ? ' active' : ''}`;
     item.innerHTML = `
@@ -94,13 +206,13 @@ function renderProxyList() {
           </div>
           <div class="proxy-detail">
             ${proxy.host}:${proxy.port}${proxy.username ? ' · 🔑' : ''}
-            ${proxy.domainList && proxy.domainList.length > 0 ? `· ${proxy.domainList.length}개 도메인` : ''}
+            ${domainCountText}
           </div>
         </div>
       </label>
       <div class="proxy-actions">
-        <button class="edit-btn" data-id="${proxy.id}" title="수정">✏️</button>
-        <button class="delete-btn" data-id="${proxy.id}" title="삭제">🗑️</button>
+        <button class="edit-btn" data-id="${proxy.id}" title="${t('btnEdit')}">✏️</button>
+        <button class="delete-btn" data-id="${proxy.id}" title="${t('btnDelete')}">🗑️</button>
       </div>
     `;
 
@@ -139,14 +251,14 @@ function updateStatus() {
     }
   } else {
     dotEl.className = 'status-dot off';
-    textEl.textContent = '직접 연결';
+    textEl.textContent = t('statusDirect');
   }
 }
 
 // ── Form Management ───────────────────────────────────
 function showAddForm() {
   editingId = null;
-  document.getElementById('formTitle').textContent = '프록시 추가';
+  document.getElementById('formTitle').textContent = t('formTitleAdd');
   clearForm();
   document.getElementById('proxyForm').classList.remove('hidden');
   document.getElementById('addProxyBtn').classList.add('hidden');
@@ -157,7 +269,7 @@ function showEditForm(id) {
   if (!proxy) return;
 
   editingId = id;
-  document.getElementById('formTitle').textContent = '프록시 수정';
+  document.getElementById('formTitle').textContent = t('formTitleEdit');
   document.getElementById('proxyName').value = proxy.name;
   document.getElementById('proxyType').value = proxy.type;
   document.getElementById('proxyHost').value = proxy.host;
@@ -204,7 +316,7 @@ async function saveProxy() {
   const domainList = domainRaw ? domainRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
 
   if (!name || !host || !port) {
-    alert('이름, 호스트, 포트는 필수 항목입니다.');
+    alert(t('alertRequired'));
     return;
   }
 
@@ -242,7 +354,7 @@ async function saveProxy() {
 }
 
 async function deleteProxy(id) {
-  if (!confirm('이 프록시를 삭제하시겠습니까?')) return;
+  if (!confirm(t('confirmDelete'))) return;
 
   proxies = proxies.filter(p => p.id !== id);
   await chrome.storage.local.set({ proxies });

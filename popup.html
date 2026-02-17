@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,31 +10,56 @@
   <div class="container">
     <header>
       <img src="icons/logo.svg" alt="SEASON" class="seaon-logo">
-      <div class="status" id="currentStatus">
-        <span class="status-dot off"></span>
-        <span class="status-text">직접 연결</span>
+      <div class="header-right">
+        <div class="status" id="currentStatus">
+          <span class="status-dot off"></span>
+          <span class="status-text"></span>
+        </div>
+        <button class="settings-btn" id="settingsBtn" title="Settings">⚙️</button>
       </div>
     </header>
 
-    <!-- 프록시 목록 -->
-    <section class="proxy-list" id="proxyList">
-      <div class="empty-state" id="emptyState">
-        <p>등록된 프록시가 없습니다</p>
-        <p class="sub">아래 버튼으로 프록시를 추가하세요</p>
+    <!-- Settings Panel -->
+    <section class="settings-panel hidden" id="settingsPanel">
+      <h2 id="settingsTitle"></h2>
+      <div class="form-group">
+        <label for="langSelect" id="labelLanguage"></label>
+        <select id="langSelect">
+          <option value="en">English</option>
+          <option value="ko">한국어</option>
+          <option value="ja">日本語</option>
+          <option value="zh">中文</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label id="labelTheme"></label>
+        <div class="theme-toggle">
+          <button type="button" class="theme-btn" data-theme="light" id="themeLight">☀️ <span></span></button>
+          <button type="button" class="theme-btn" data-theme="dark" id="themeDark">🌙 <span></span></button>
+          <button type="button" class="theme-btn" data-theme="system" id="themeSystem">💻 <span></span></button>
+        </div>
       </div>
     </section>
 
-    <!-- 프록시 추가/수정 폼 -->
+    <!-- Proxy List -->
+    <section class="proxy-list" id="proxyList">
+      <div class="empty-state" id="emptyState">
+        <p id="emptyTitle"></p>
+        <p class="sub" id="emptySub"></p>
+      </div>
+    </section>
+
+    <!-- Proxy Add/Edit Form -->
     <section class="proxy-form hidden" id="proxyForm">
-      <h2 id="formTitle">프록시 추가</h2>
+      <h2 id="formTitle"></h2>
       <div class="form-group">
-        <label for="proxyName">이름</label>
-        <input type="text" id="proxyName" placeholder="예: 회사 프록시">
+        <label for="proxyName" id="labelName"></label>
+        <input type="text" id="proxyName">
       </div>
       <div class="form-group">
-        <label for="proxyType">프로토콜</label>
+        <label for="proxyType" id="labelProtocol"></label>
         <select id="proxyType">
-          <option value="all" selected>일괄 적용</option>
+          <option value="all" selected id="optionAll"></option>
           <option value="http">HTTP</option>
           <option value="https">HTTPS</option>
           <option value="socks4">SOCKS4</option>
@@ -42,51 +67,52 @@
         </select>
       </div>
       <div class="form-group">
-        <label for="proxyHost">호스트</label>
-        <input type="text" id="proxyHost" placeholder="예: 192.168.1.100">
+        <label for="proxyHost" id="labelHost"></label>
+        <input type="text" id="proxyHost">
       </div>
       <div class="form-group">
-        <label for="proxyPort">포트</label>
-        <input type="number" id="proxyPort" placeholder="예: 8080">
+        <label for="proxyPort" id="labelPort"></label>
+        <input type="number" id="proxyPort">
       </div>
       <div class="form-group">
-        <label>인증 (선택사항)</label>
+        <label id="labelAuth"></label>
         <div class="auth-fields">
-          <input type="text" id="proxyUser" placeholder="사용자명">
-          <input type="password" id="proxyPass" placeholder="비밀번호">
+          <input type="text" id="proxyUser">
+          <input type="password" id="proxyPass">
         </div>
       </div>
       <div class="form-group">
-        <label>프록시 정책 모드</label>
+        <label id="labelPolicyMode"></label>
         <div class="policy-toggle">
           <button type="button" class="policy-btn active" data-mode="blacklist" id="policyBlacklist">
             <span class="policy-icon">🚫</span>
-            <span class="policy-label">Blacklist</span>
-            <span class="policy-desc">전체 적용, 목록만 제외</span>
+            <span class="policy-label"></span>
+            <span class="policy-desc"></span>
           </button>
           <button type="button" class="policy-btn" data-mode="whitelist" id="policyWhitelist">
             <span class="policy-icon">✅</span>
-            <span class="policy-label">Whitelist</span>
-            <span class="policy-desc">목록만 프록시 적용</span>
+            <span class="policy-label"></span>
+            <span class="policy-desc"></span>
           </button>
         </div>
       </div>
       <div class="form-group">
-        <label for="domainList" id="domainListLabel">프록시 제외 목록 (콤마로 구분)</label>
-        <textarea id="domainList" rows="3" placeholder="예: localhost, 127.0.0.1, *.example.com"></textarea>
+        <label for="domainList" id="domainListLabel"></label>
+        <textarea id="domainList" rows="3"></textarea>
       </div>
       <div class="form-actions">
-        <button class="btn btn-secondary" id="cancelBtn">취소</button>
-        <button class="btn btn-primary" id="saveBtn">저장</button>
+        <button class="btn btn-secondary" id="cancelBtn"></button>
+        <button class="btn btn-primary" id="saveBtn"></button>
       </div>
     </section>
 
-    <!-- 하단 액션 -->
+    <!-- Footer -->
     <footer>
-      <button class="btn btn-add" id="addProxyBtn">+ 프록시 추가</button>
+      <button class="btn btn-add" id="addProxyBtn"></button>
     </footer>
   </div>
 
+  <script src="locales.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

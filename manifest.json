@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SEASON Proxy Switcher",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "웹 프록시를 간편하게 스위칭할 수 있는 크롬 익스텐션",
   "permissions": [
     "proxy",
