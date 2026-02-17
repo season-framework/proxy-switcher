@@ -45,6 +45,7 @@ const LOCALES = {
     themeSystem: 'System',
     btnBack: 'Back',
   },
+  ko: {
     statusDirect: '직접 연결',
     noProxy: '프록시 미사용',
     directConnection: '직접 연결',
@@ -88,6 +89,7 @@ const LOCALES = {
     themeSystem: '시스템',
     btnBack: '돌아가기',
   },
+  ja: {
     statusDirect: '直接接続',
     noProxy: 'プロキシ未使用',
     directConnection: '直接接続',
@@ -175,6 +177,7 @@ const LOCALES = {
     themeSystem: '系统',
     btnBack: '返回',
   },
+};
 
 let currentLang = 'en';
 

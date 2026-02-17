@@ -1,6 +1,6 @@
 # SEASON Proxy Switcher
 
-A Chrome extension for quick and easy web proxy switching.
+A Chrome extension for quick and easy web proxy switching with multi-language and dark mode support.
 
 ## Features
 
@@ -9,10 +9,13 @@ A Chrome extension for quick and easy web proxy switching.
 - **Multiple Protocols** — HTTP, HTTPS, SOCKS4, SOCKS5, or Apply All (default)
 - **Policy Modes**
   - **Blacklist** — Proxy all traffic, bypass specified domains
-  - **Whitelist** — Direct connection by default, proxy only specified domains
+  - **Whitelist** — Direct connection by default, proxy only specified domains (supports CIDR notation)
+- **Proxy Authentication** — Optional username/password for proxies requiring authentication
+- **Multi-language** — English, Korean, Japanese, Chinese (auto-detects browser language)
+- **Dark Mode** — Light / Dark / System theme options
+- **Exclusive View Switching** — Clean single-view UI (list, form, settings switch exclusively)
 - **Auto Restore** — Automatically restores your last proxy setting on browser restart
 - **Badge Indicator** — Extension icon shows current proxy mode (BL/WL)
-- **Proxy Authentication** — Optional username/password for proxies requiring authentication
 
 ## Installation
 
@@ -25,42 +28,36 @@ A Chrome extension for quick and easy web proxy switching.
 5. Select the `season-chrome-extension` folder
 6. The extension icon will appear in your toolbar
 
-### From ZIP Package
-
-1. Download `season-proxy-switcher-v1.0.0.zip` from the `dist/` folder
-2. Extract the ZIP file to a local directory
-3. Open Chrome and navigate to `chrome://extensions`
-4. Enable **Developer mode**
-5. Click **Load unpacked**
-6. Select the extracted folder
-
 ## Usage
 
 1. Click the extension icon in the Chrome toolbar
-2. Click **+ 프록시 추가** to add a new proxy
+2. Click **+ Add Proxy** to add a new proxy
 3. Fill in the proxy details:
-   - **이름** — A friendly name for the proxy
-   - **프로토콜** — Select protocol or "일괄 적용" to apply across all protocols
-   - **호스트** — Proxy server address
-   - **포트** — Proxy server port
-   - **인증** — Username and password (optional, for proxies requiring authentication)
-   - **프록시 정책 모드** — Choose Blacklist or Whitelist mode
-   - **도메인 목록** — Domains to bypass or include (depending on policy mode)
+   - **Name** — A friendly name for the proxy
+   - **Protocol** — Select protocol or "Apply All" for all protocols
+   - **Host** — Proxy server address
+   - **Port** — Proxy server port
+   - **Authentication** — Username and password (optional)
+   - **Policy Mode** — Choose Blacklist or Whitelist mode
+   - **Domain List** — Domains to bypass or include (supports CIDR: `192.168.0.0/24`)
 4. Select a proxy from the list using the radio button to activate it
-5. Select **프록시 미사용** to disconnect and use direct connection
+5. Select **No Proxy** to disconnect and use direct connection
+6. Click the ⚙️ gear icon to change language or theme
 
 ## Project Structure
 
 ```
 season-chrome-extension/
-├── manifest.json      # Chrome Extension Manifest V3
-├── background.js      # Service worker for proxy control
-├── popup.html         # Extension popup UI
-├── popup.css          # Popup styles
-├── popup.js           # Popup logic
-├── icons/             # Extension icons (16/48/128px)
-├── dist/              # Distribution packages
-└── RELEASES.md        # Release history
+├── manifest.json       # Chrome Extension Manifest V3
+├── background.js       # Service worker — proxy control, auth, badge
+├── popup.html          # Popup UI entry point
+├── popup.css           # Popup styles (CSS custom properties for theming)
+├── popup.js            # Popup logic — view switching, CRUD, proxy activation
+├── locales.js          # i18n translations (en, ko, ja, zh)
+├── icons/              # Extension icons (logo.svg, 16/48/128px PNG)
+├── RELEASES.md         # Version history
+├── README.md           # Project documentation
+└── LICENSE             # MIT License
 ```
 
 ## Build
@@ -68,9 +65,8 @@ season-chrome-extension/
 To create a distribution ZIP package:
 
 ```bash
-mkdir -p dist
-zip -r dist/season-proxy-switcher-v1.0.1.zip \
-  manifest.json background.js popup.html popup.js popup.css icons/ \
+zip -r season-proxy-switcher-v1.1.0.zip \
+  manifest.json background.js popup.html popup.js popup.css locales.js icons/ \
   -x "icons/icon.svg" "icons/.DS_Store"
 ```
 

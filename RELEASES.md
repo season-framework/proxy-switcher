@@ -2,20 +2,22 @@
 
 ## v1.1.0 (2026-02-18)
 
-### Internationalization & Theme Support
+### Internationalization, Theme & View System
 
 #### New Features
 - **Multi-language Support** — Added 4 languages: English, Korean (한국어), Japanese (日本語), Chinese (中文)
 - **Dark Mode** — Light / Dark / System theme switcher
 - **Settings Panel** — Gear icon in header opens language and theme preferences
+- **Exclusive View Switching** — List, form, and settings views now switch exclusively (`switchView()`)
 - Auto-detect browser language on first launch
 - System theme option follows OS-level dark mode preference
 
 #### Improvements
 - CIDR/IP address support in whitelist PAC scripts (e.g. `192.168.0.0/24`, `10.0.0.0/8`)
 - All UI text dynamically rendered via i18n translation keys
-- CSS custom properties for consistent theming
+- CSS custom properties for consistent theming across light/dark modes
 - Logo inverts automatically in dark mode
+- Settings panel includes back button for navigation
 
 ---
 
