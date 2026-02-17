@@ -1,5 +1,7 @@
 // background.js — Season Proxy Switcher Service Worker
 
+let currentAuthCredentials = null;
+
 // ── Message Listener ──────────────────────────────────
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'setProxy') {
@@ -15,7 +17,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 // ── Proxy Control ─────────────────────────────────────
 async function setProxy(proxyConfig) {
-  const { type, host, port, policyMode, domainList } = proxyConfig;
+  const { type, host, port, policyMode, domainList, username, password } = proxyConfig;
+
+  // Store auth credentials if provided
+  if (username) {
+    currentAuthCredentials = { username, password: password || '' };
+  } else {
+    currentAuthCredentials = null;
+  }
 
   let scheme;
   switch (type) {
@@ -121,6 +130,7 @@ async function clearProxy() {
           reject(chrome.runtime.lastError);
         } else {
           console.log('Proxy cleared — direct connection');
+          currentAuthCredentials = null;
           updateBadge(false);
           resolve();
         }
@@ -158,6 +168,8 @@ async function restoreProxy() {
         type: proxy.type,
         host: proxy.host,
         port: proxy.port,
+        username: proxy.username || '',
+        password: proxy.password || '',
         policyMode: proxy.policyMode || 'blacklist',
         domainList: proxy.domainList || [],
       });
@@ -171,3 +183,21 @@ async function restoreProxy() {
 chrome.proxy.onProxyError.addListener((details) => {
   console.error('Proxy error:', details);
 });
+
+// ── Auth Listener ─────────────────────────────────────
+chrome.webRequest.onAuthRequired.addListener(
+  (details, asyncCallback) => {
+    if (currentAuthCredentials && details.isProxy) {
+      asyncCallback({
+        authCredentials: {
+          username: currentAuthCredentials.username,
+          password: currentAuthCredentials.password,
+        },
+      });
+    } else {
+      asyncCallback();
+    }
+  },
+  { urls: ['<all_urls>'] },
+  ['asyncBlocking']
+);

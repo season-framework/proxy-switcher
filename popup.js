@@ -93,7 +93,7 @@ function renderProxyList() {
             <span class="proxy-badge ${proxy.type}">${proxy.type}</span>
           </div>
           <div class="proxy-detail">
-            ${proxy.host}:${proxy.port}
+            ${proxy.host}:${proxy.port}${proxy.username ? ' · 🔑' : ''}
             ${proxy.domainList && proxy.domainList.length > 0 ? `· ${proxy.domainList.length}개 도메인` : ''}
           </div>
         </div>
@@ -162,6 +162,8 @@ function showEditForm(id) {
   document.getElementById('proxyType').value = proxy.type;
   document.getElementById('proxyHost').value = proxy.host;
   document.getElementById('proxyPort').value = proxy.port;
+  document.getElementById('proxyUser').value = proxy.username || '';
+  document.getElementById('proxyPass').value = proxy.password || '';
   document.getElementById('domainList').value = (proxy.domainList || []).join(', ');
 
   // Restore policy mode
@@ -183,6 +185,8 @@ function clearForm() {
   document.getElementById('proxyType').value = 'all';
   document.getElementById('proxyHost').value = '';
   document.getElementById('proxyPort').value = '';
+  document.getElementById('proxyUser').value = '';
+  document.getElementById('proxyPass').value = '';
   document.getElementById('domainList').value = '';
   setPolicyMode('blacklist');
 }
@@ -193,6 +197,8 @@ async function saveProxy() {
   const type = document.getElementById('proxyType').value;
   const host = document.getElementById('proxyHost').value.trim();
   const port = document.getElementById('proxyPort').value.trim();
+  const username = document.getElementById('proxyUser').value.trim();
+  const password = document.getElementById('proxyPass').value;
   const policyMode = currentPolicyMode;
   const domainRaw = document.getElementById('domainList').value.trim();
   const domainList = domainRaw ? domainRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
@@ -206,7 +212,7 @@ async function saveProxy() {
     // Update existing
     const idx = proxies.findIndex(p => p.id === editingId);
     if (idx !== -1) {
-      proxies[idx] = { ...proxies[idx], name, type, host, port: parseInt(port), policyMode, domainList };
+      proxies[idx] = { ...proxies[idx], name, type, host, port: parseInt(port), username, password, policyMode, domainList };
     }
   } else {
     // Add new
@@ -216,6 +222,8 @@ async function saveProxy() {
       type,
       host,
       port: parseInt(port),
+      username,
+      password,
       policyMode,
       domainList,
     };
@@ -266,6 +274,8 @@ async function applyProxy(id) {
       type: proxy.type,
       host: proxy.host,
       port: proxy.port,
+      username: proxy.username || '',
+      password: proxy.password || '',
       policyMode: proxy.policyMode || 'blacklist',
       domainList: proxy.domainList || [],
     },

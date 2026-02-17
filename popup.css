@@ -216,6 +216,15 @@ header h1 {
   box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
 }
 
+.auth-fields {
+  display: flex;
+  gap: 8px;
+}
+
+.auth-fields input {
+  flex: 1;
+}
+
 .form-actions {
   display: flex;
   gap: 8px;

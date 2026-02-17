@@ -12,6 +12,7 @@ A Chrome extension for quick and easy web proxy switching.
   - **Whitelist** — Direct connection by default, proxy only specified domains
 - **Auto Restore** — Automatically restores your last proxy setting on browser restart
 - **Badge Indicator** — Extension icon shows current proxy mode (BL/WL)
+- **Proxy Authentication** — Optional username/password for proxies requiring authentication
 
 ## Installation
 
@@ -42,6 +43,7 @@ A Chrome extension for quick and easy web proxy switching.
    - **프로토콜** — Select protocol or "일괄 적용" to apply across all protocols
    - **호스트** — Proxy server address
    - **포트** — Proxy server port
+   - **인증** — Username and password (optional, for proxies requiring authentication)
    - **프록시 정책 모드** — Choose Blacklist or Whitelist mode
    - **도메인 목록** — Domains to bypass or include (depending on policy mode)
 4. Select a proxy from the list using the radio button to activate it
@@ -67,7 +69,7 @@ To create a distribution ZIP package:
 
 ```bash
 mkdir -p dist
-zip -r dist/season-proxy-switcher-v1.0.0.zip \
+zip -r dist/season-proxy-switcher-v1.0.1.zip \
   manifest.json background.js popup.html popup.js popup.css icons/ \
   -x "icons/icon.svg" "icons/.DS_Store"
 ```

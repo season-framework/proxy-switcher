@@ -50,6 +50,13 @@
         <input type="number" id="proxyPort" placeholder="예: 8080">
       </div>
       <div class="form-group">
+        <label>인증 (선택사항)</label>
+        <div class="auth-fields">
+          <input type="text" id="proxyUser" placeholder="사용자명">
+          <input type="password" id="proxyPass" placeholder="비밀번호">
+        </div>
+      </div>
+      <div class="form-group">
         <label>프록시 정책 모드</label>
         <div class="policy-toggle">
           <button type="button" class="policy-btn active" data-mode="blacklist" id="policyBlacklist">

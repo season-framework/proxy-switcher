@@ -1,5 +1,20 @@
 # RELEASES
 
+## v1.0.1 (2026-02-18)
+
+### Proxy Authentication Support
+
+#### New Features
+- **Proxy Authentication** — Added username/password fields for proxy servers that require authentication
+- Auto-respond to proxy auth challenges via `onAuthRequired` listener
+- Auth indicator (🔑) shown in proxy list for proxies with credentials
+
+#### Fixes
+- Fixed `webRequestAuthProvider` permission for Manifest V3 compatibility
+- Changed `onAuthRequired` from `blocking` to `asyncBlocking` mode (MV3 requirement)
+
+---
+
 ## v1.0.0 (2026-02-17)
 
 ### Initial Release
