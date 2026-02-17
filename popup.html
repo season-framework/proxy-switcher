@@ -19,8 +19,8 @@
       </div>
     </header>
 
-    <!-- Settings Panel -->
-    <section class="settings-panel hidden" id="settingsPanel">
+    <!-- View: Settings -->
+    <section class="view settings-panel hidden" id="settingsPanel">
       <h2 id="settingsTitle"></h2>
       <div class="form-group">
         <label for="langSelect" id="labelLanguage"></label>
@@ -39,18 +39,21 @@
           <button type="button" class="theme-btn" data-theme="system" id="themeSystem">💻 <span></span></button>
         </div>
       </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" id="settingsBackBtn"></button>
+      </div>
     </section>
 
-    <!-- Proxy List -->
-    <section class="proxy-list" id="proxyList">
+    <!-- View: Proxy List -->
+    <section class="view proxy-list" id="proxyList">
       <div class="empty-state" id="emptyState">
         <p id="emptyTitle"></p>
         <p class="sub" id="emptySub"></p>
       </div>
     </section>
 
-    <!-- Proxy Add/Edit Form -->
-    <section class="proxy-form hidden" id="proxyForm">
+    <!-- View: Proxy Add/Edit Form -->
+    <section class="view proxy-form hidden" id="proxyForm">
       <h2 id="formTitle"></h2>
       <div class="form-group">
         <label for="proxyName" id="labelName"></label>
@@ -106,8 +109,8 @@
       </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
+    <!-- Footer (visible only on list view) -->
+    <footer class="view-list-footer" id="listFooter">
       <button class="btn btn-add" id="addProxyBtn"></button>
     </footer>
   </div>

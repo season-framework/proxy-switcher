@@ -43,8 +43,8 @@ const LOCALES = {
     themeLight: 'Light',
     themeDark: 'Dark',
     themeSystem: 'System',
+    btnBack: 'Back',
   },
-  ko: {
     statusDirect: '직접 연결',
     noProxy: '프록시 미사용',
     directConnection: '직접 연결',
@@ -86,8 +86,8 @@ const LOCALES = {
     themeLight: '라이트',
     themeDark: '다크',
     themeSystem: '시스템',
+    btnBack: '돌아가기',
   },
-  ja: {
     statusDirect: '直接接続',
     noProxy: 'プロキシ未使用',
     directConnection: '直接接続',
@@ -129,6 +129,7 @@ const LOCALES = {
     themeLight: 'ライト',
     themeDark: 'ダーク',
     themeSystem: 'システム',
+    btnBack: '戻る',
   },
   zh: {
     statusDirect: '直接连接',
@@ -172,8 +173,8 @@ const LOCALES = {
     themeLight: '浅色',
     themeDark: '深色',
     themeSystem: '系统',
+    btnBack: '返回',
   },
-};
 
 let currentLang = 'en';
 

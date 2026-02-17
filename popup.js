@@ -7,6 +7,35 @@ let activeProxyId = null;
 let editingId = null;
 let currentPolicyMode = 'blacklist';
 let currentTheme = 'system';
+let currentView = 'list'; // 'list' | 'form' | 'settings'
+
+// ── View Switching ────────────────────────────────────
+function switchView(view) {
+  currentView = view;
+  const listEl = document.getElementById('proxyList');
+  const formEl = document.getElementById('proxyForm');
+  const settingsEl = document.getElementById('settingsPanel');
+  const footerEl = document.getElementById('listFooter');
+  const settingsBtn = document.getElementById('settingsBtn');
+
+  // Hide all views
+  listEl.classList.add('hidden');
+  formEl.classList.add('hidden');
+  settingsEl.classList.add('hidden');
+  footerEl.classList.add('hidden');
+  settingsBtn.classList.remove('active');
+
+  // Show target view
+  if (view === 'list') {
+    listEl.classList.remove('hidden');
+    footerEl.classList.remove('hidden');
+  } else if (view === 'form') {
+    formEl.classList.remove('hidden');
+  } else if (view === 'settings') {
+    settingsEl.classList.remove('hidden');
+    settingsBtn.classList.add('active');
+  }
+}
 
 // ── Init ──────────────────────────────────────────────
 async function init() {
@@ -73,6 +102,9 @@ function applyLocaleToUI() {
   // Add button
   document.getElementById('addProxyBtn').textContent = t('addProxy');
 
+  // Settings back button
+  document.getElementById('settingsBackBtn').textContent = t('btnBack');
+
   // Domain label (depends on current policy mode)
   setPolicyMode(currentPolicyMode);
 
@@ -108,10 +140,16 @@ function bindEvents() {
 
   // Settings toggle
   document.getElementById('settingsBtn').addEventListener('click', () => {
-    const panel = document.getElementById('settingsPanel');
-    const btn = document.getElementById('settingsBtn');
-    panel.classList.toggle('hidden');
-    btn.classList.toggle('active');
+    if (currentView === 'settings') {
+      switchView('list');
+    } else {
+      switchView('settings');
+    }
+  });
+
+  // Settings back button
+  document.getElementById('settingsBackBtn').addEventListener('click', () => {
+    switchView('list');
   });
 
   // Language change
@@ -260,8 +298,7 @@ function showAddForm() {
   editingId = null;
   document.getElementById('formTitle').textContent = t('formTitleAdd');
   clearForm();
-  document.getElementById('proxyForm').classList.remove('hidden');
-  document.getElementById('addProxyBtn').classList.add('hidden');
+  switchView('form');
 }
 
 function showEditForm(id) {
@@ -281,13 +318,11 @@ function showEditForm(id) {
   // Restore policy mode
   setPolicyMode(proxy.policyMode || 'blacklist');
 
-  document.getElementById('proxyForm').classList.remove('hidden');
-  document.getElementById('addProxyBtn').classList.add('hidden');
+  switchView('form');
 }
 
 function hideForm() {
-  document.getElementById('proxyForm').classList.add('hidden');
-  document.getElementById('addProxyBtn').classList.remove('hidden');
+  switchView('list');
   clearForm();
   editingId = null;
 }
